@@ -1,5 +1,6 @@
 interface UserType {
-  username: string;
+  name: string;
+  email: string;
   password: string;
   repassword?: string;
   notes: [];

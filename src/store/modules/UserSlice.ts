@@ -3,7 +3,7 @@ import { RootState } from '..';
 import { UserType } from '../../types';
 
 const adapter = createEntityAdapter<UserType>({
-  selectId: item => item.username
+  selectId: item => item.name
 });
 
 export const { selectAll, selectById } = adapter.getSelectors((state: RootState) => state.UserSlice);

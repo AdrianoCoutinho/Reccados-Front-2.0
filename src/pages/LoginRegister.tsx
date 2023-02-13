@@ -3,60 +3,54 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { NoteType, UserType } from '../types';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { addManyUser, addOneUser } from '../store/modules/UserSlice';
 import { useLocation } from 'react-router-dom';
 import { Link, Snackbars } from '../components';
 import { setMessage } from '../store/modules/SnackBarsSlice';
-import { addOneNote } from '../store/modules/NoteSlice';
+import { apiPost } from '../api';
 
 const LoginRegister: React.FC = () => {
   const navigate = useNavigate();
   const pathName = useLocation().pathname;
   const dispatch = useAppDispatch();
-  const userData = useAppSelector(state => state.UserSlice);
-  const [toSave, setToSave] = useState<boolean>(false);
   const [logged, setLogged] = useState<boolean>(false);
   const [user, setUser] = useState<UserType>({
-    username: '',
+    name: '',
+    email: '',
     password: '',
     repassword: '',
     notes: []
   });
 
-  const loggedUser = () => {
-    return localStorage.getItem('ReccadosLoggedUser') || sessionStorage.getItem('ReccadosLoggedUser') || '';
-  };
+  // const loggedUser = () => {
+  //   return localStorage.getItem('ReccadosLoggedUser') || sessionStorage.getItem('ReccadosLoggedUser') || '';
+  // };
 
-  useEffect(() => {
-    if (loggedUser() != '') {
-      return navigate('/notes');
-    }
-    if (usersData() != '{}') {
-      dispatch(addManyUser(usersData()));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (loggedUser() != '') {
+  //     return navigate('/notes');
+  //   }
+  //   if (usersData() != '{}') {
+  //     dispatch(addManyUser(usersData()));
+  //   }
+  // }, []);
 
-  const usersData = () => {
-    return JSON.parse(localStorage.getItem('userData') || '{}');
-  };
+  // const usersData = () => {
+  //   return JSON.parse(localStorage.getItem('userData') || '{}');
+  // };
 
   const ValidatContact = () => {
     pathName != '/' ? handleRegisterContact() : handleLoginContact();
   };
 
-  const handleRegisterContact = () => {
-    const userExists = usersData()[user.username.toLowerCase()];
-
-    if (user.username === '' || user.password === '' || user.repassword === '') {
-      return dispatch(setMessage({ message: 'Preencha os dois campos!', status: 'error' }));
+  const handleRegisterContact = async () => {
+    if (user.name === '' || user.email === '' || user.password === '' || user.repassword === '') {
+      return dispatch(setMessage({ message: 'Preencha todos os campos!', status: 'error' }));
     }
     if (user.password != user.repassword) {
       return dispatch(setMessage({ message: 'As senhas não coincidem!', status: 'error' }));
     }
-    if (userExists) {
-      return dispatch(setMessage({ message: 'Este usuário já existe!', status: 'error' }));
-    }
-    if (user.username.length < 5) {
+
+    if (user.name.length < 5) {
       return dispatch(
         setMessage({ message: 'Utilize um nome de usuário com no mínimo 5 caracteres!', status: 'error' })
       );
@@ -65,45 +59,45 @@ const LoginRegister: React.FC = () => {
       return dispatch(setMessage({ message: 'Utilize uma senha com no mínimo 6 caracteres!', status: 'error' }));
     }
 
-    const newUser: UserType = {
-      username: user.username.toLowerCase(),
-      password: user.password,
-      notes: user.notes
-    };
-    dispatch(addOneUser(newUser));
-    const newNote: NoteType = {
-      id: Math.floor(Date.now() / 1000),
-      detail: 'Primeiro recado',
-      description:
-        'Este é o seu primeiro recado, nos detalhes utilize no mínimo 5 e no máximo 20 caracteres. Na descrição utilize no mínimo 20 e no máximo 494 caracteres. \n Este recado será apagado, a menos que você o edite.'
-    };
-    dispatch(addOneNote(newNote));
-    setToSave(true);
-    return navigate('/');
+    try {
+      const newUser: UserType = {
+        name: user.name.toLowerCase(),
+        email: user.email,
+        password: user.password,
+        repassword: user.repassword,
+        notes: user.notes
+      };
+      await apiPost('/', newUser);
+      dispatch(setMessage({ message: 'Registrado com sucesso!', status: 'success' }));
+      return navigate('/');
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      dispatch(setMessage({ message: error.response.data.message, status: 'error' }));
+    }
   };
 
   const handleLoginContact = () => {
-    const savedUsers = usersData();
-    if (savedUsers[user.username.toLowerCase()] && savedUsers[user.username.toLowerCase()].password === user.password) {
-      sessionStorage.setItem('ReccadosLoggedUser', user.username.toLowerCase());
-      if (logged) {
-        localStorage.setItem('ReccadosLoggedUser', user.username.toLowerCase());
-      }
-      return navigate('/notes');
-    } else {
-      return dispatch(setMessage({ message: 'Usuário ou senha incorretos!', status: 'error' }));
-    }
+    // const savedUsers = usersData();
+    // if (savedUsers[user.username.toLowerCase()] && savedUsers[user.username.toLowerCase()].password === user.password) {
+    //   sessionStorage.setItem('ReccadosLoggedUser', user.username.toLowerCase());
+    //   if (logged) {
+    //     localStorage.setItem('ReccadosLoggedUser', user.username.toLowerCase());
+    //   }
+    //   return navigate('/notes');
+    // } else {
+    //   return dispatch(setMessage({ message: 'Usuário ou senha incorretos!', status: 'error' }));
+    // }
   };
 
   const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLogged(event.target.checked);
   };
 
-  useEffect(() => {
-    if (toSave) {
-      localStorage.setItem('userData', JSON.stringify(userData.entities));
-    }
-  }, [userData]);
+  // useEffect(() => {
+  //   if (toSave) {
+  //     localStorage.setItem('userData', JSON.stringify(userData.entities));
+  //   }
+  // }, [userData]);
 
   return (
     <React.Fragment>
@@ -148,11 +142,28 @@ const LoginRegister: React.FC = () => {
           </Grid>
           <Grid item xs={12} sx={{ mt: '50px' }}>
             <TextField
-              label="Usuário"
-              value={user.username}
+              label="Nome"
+              value={user.name}
               onChange={ev =>
                 setUser({
-                  username: ev.target.value,
+                  name: ev.target.value,
+                  email: user.email,
+                  password: user.password,
+                  repassword: user.password,
+                  notes: user.notes
+                })
+              }
+              variant="outlined"
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              label="Email"
+              value={user.email}
+              onChange={ev =>
+                setUser({
+                  name: user.name,
+                  email: ev.target.value,
                   password: user.password,
                   repassword: user.password,
                   notes: user.notes
@@ -167,7 +178,8 @@ const LoginRegister: React.FC = () => {
               value={user.password}
               onChange={ev =>
                 setUser({
-                  username: user.username,
+                  name: user.name,
+                  email: user.email,
                   password: ev.target.value,
                   repassword: user.repassword,
                   notes: user.notes
@@ -185,7 +197,8 @@ const LoginRegister: React.FC = () => {
                 value={user.repassword}
                 onChange={ev =>
                   setUser({
-                    username: user.username,
+                    name: user.name,
+                    email: user.email,
                     password: user.password,
                     notes: user.notes,
                     repassword: ev.target.value
