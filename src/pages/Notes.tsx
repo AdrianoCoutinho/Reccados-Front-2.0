@@ -3,54 +3,40 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppBarHeader, DialogAction, Snackbars } from '../components';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import {
-  addManyNote,
-  addOneNote,
-  clearNotes,
-  deleteOneNote,
-  selectNotes,
-  updateOneNote
-} from '../store/modules/NoteSlice';
+import { listAllNotes, selectNotes } from '../store/modules/NoteSlice';
 import { setMessage } from '../store/modules/SnackBarsSlice';
 import { NoteType } from '../types';
+import { createNote } from '../api';
 
 const Notes: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const noteData = useAppSelector(selectNotes);
-  const [save, setSave] = useState<boolean>(false);
-
-  const [note, setNote] = useState<NoteType>({
-    id: 0,
-    detail: '',
-    description: ''
-  });
-
-  const usersData = () => {
-    return JSON.parse(localStorage.getItem('userData') || '[]');
-  };
 
   const loggedUser = () => {
     return localStorage.getItem('ReccadosLoggedUser') || sessionStorage.getItem('ReccadosLoggedUser') || '';
   };
 
+  const getListNotes = async () => {
+    dispatch(listAllNotes(loggedUser()));
+  };
+
   useEffect(() => {
-    if (loggedUser() === '') {
-      return navigate('/');
-    }
-    const savedNotes = usersData()[loggedUser().toLowerCase()].notes;
-    dispatch(addManyNote(savedNotes));
+    getListNotes();
   }, []);
+
+  const [note, setNote] = useState<NoteType>({
+    detail: '',
+    description: ''
+  });
 
   const HandleLogout = () => {
     localStorage.removeItem('ReccadosLoggedUser');
     sessionStorage.removeItem('ReccadosLoggedUser');
-    setSave(false);
-    dispatch(clearNotes());
     navigate('/');
   };
 
-  const HandleAddNote = () => {
+  const HandleAddNote = async () => {
     if (note.detail === '' || note.description === '') {
       return dispatch(setMessage({ message: 'Digite algo nos campos!', status: 'error' }));
     }
@@ -71,61 +57,39 @@ const Notes: React.FC = () => {
       );
     }
     const newNote: NoteType = {
-      id: Math.floor(Date.now() / 1000),
       detail: note.detail,
       description: note.description
     };
-    dispatch(addOneNote(newNote));
-    setSave(true);
-    dispatch(setMessage({ message: 'Recado adicionado com sucesso!', status: 'success' }));
+
+    const result = await createNote(loggedUser(), newNote);
+
+    if (result.ok) {
+      getListNotes();
+      HandleClearNotes();
+      dispatch(setMessage({ message: 'Recado adicionado com sucesso!', status: 'success' }));
+      return;
+    }
+    dispatch(setMessage({ message: result.message.toString(), status: 'error' }));
   };
 
   const HandleClearNotes = () => {
     setNote({
-      id: 0,
       detail: '',
       description: ''
     });
   };
 
-  const handleEditConfirm = (noteToEdit: NoteType) => {
-    dispatch(
-      updateOneNote({
-        id: noteToEdit.id,
-        changes: { detail: noteToEdit.detail, description: noteToEdit.description }
-      })
-    );
-    setSave(true);
+  const handleEditConfirm = () => {
     dispatch(setMessage({ message: 'Recado editado com sucesso!', status: 'success' }));
   };
 
-  const handleDeleteConfirm = (noteToDelete: NoteType) => {
-    dispatch(deleteOneNote(noteToDelete.id));
-    setSave(true);
+  const handleDeleteConfirm = () => {
     dispatch(setMessage({ message: 'Recado deletado com sucesso!', status: 'success' }));
   };
 
-  useEffect(() => {
-    if (save) {
-      const toUpdate = usersData();
-      toUpdate[loggedUser()].notes = noteData;
-      localStorage.setItem('userData', JSON.stringify(toUpdate));
-      setNote({
-        id: 0,
-        detail: '',
-        description: ''
-      });
-    }
-  }, [noteData]);
-
   return (
     <React.Fragment>
-      <AppBarHeader
-        titleHeader={'Reccados'}
-        actionLogout={HandleLogout}
-        logedUser={loggedUser()}
-        noteLength={noteData.length}
-      />
+      <AppBarHeader titleHeader={'Reccados'} actionLogout={HandleLogout} logedUser={loggedUser()} noteLength={22} />
       <Container maxWidth={false} sx={{ backgroundColor: '#ebeeef', height: 'auto', paddingBottom: '10px' }}>
         <Grid container rowSpacing={1} columnSpacing={2}>
           <Snackbars />
@@ -137,7 +101,6 @@ const Notes: React.FC = () => {
               value={note.detail}
               onChange={ev => {
                 setNote({
-                  id: note.id,
                   detail: ev.target.value,
                   description: note.description
                 });
@@ -155,7 +118,6 @@ const Notes: React.FC = () => {
               value={note.description}
               onChange={ev => {
                 setNote({
-                  id: note.id,
                   detail: note.detail,
                   description: ev.target.value
                 });

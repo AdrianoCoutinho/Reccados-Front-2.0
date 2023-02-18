@@ -19,13 +19,12 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
   const [open, setOpen] = React.useState(false);
   const [dialogDelete, setdialogDelete] = React.useState(false);
   const [selectedNote, setselectedNote] = React.useState<NoteType>({
-    id: Note.id,
     detail: Note.detail,
     description: Note.description
   });
 
   const handleClickOpenEdit = () => {
-    setselectedNote({ id: Note.id, detail: Note.detail, description: selectedNote.description });
+    setselectedNote({ detail: Note.detail, description: selectedNote.description });
     setdialogDelete(false);
     setOpen(true);
   };
@@ -84,7 +83,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
         Excluir
       </Button>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>ID: {Note.id}</DialogTitle>
+        <DialogTitle>ID: {22}</DialogTitle>
         {!dialogDelete && (
           <>
             <DialogContent>
@@ -97,7 +96,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
                 margin="dense"
                 value={selectedNote.detail}
                 onChange={ev => {
-                  setselectedNote({ id: Note.id, detail: ev.target.value, description: selectedNote.description });
+                  setselectedNote({ detail: ev.target.value, description: selectedNote.description });
                 }}
                 label="Detalhes"
                 type="text"
@@ -111,7 +110,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
                 inputProps={{ maxLength: 494 }}
                 value={selectedNote.description}
                 onChange={ev => {
-                  setselectedNote({ id: Note.id, detail: selectedNote.detail, description: ev.target.value });
+                  setselectedNote({ detail: selectedNote.detail, description: ev.target.value });
                 }}
                 label="Descrição"
                 type="text"
@@ -137,7 +136,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
                 margin="dense"
                 value={selectedNote.detail}
                 onChange={ev => {
-                  setselectedNote({ id: Note.id, detail: ev.target.value, description: selectedNote.description });
+                  setselectedNote({ detail: ev.target.value, description: selectedNote.description });
                 }}
                 label="Detalhes"
                 type="text"
@@ -149,7 +148,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
                 margin="dense"
                 value={selectedNote.description}
                 onChange={ev => {
-                  setselectedNote({ id: Note.id, detail: selectedNote.detail, description: ev.target.value });
+                  setselectedNote({ detail: selectedNote.detail, description: ev.target.value });
                 }}
                 label="Detalhes"
                 type="text"

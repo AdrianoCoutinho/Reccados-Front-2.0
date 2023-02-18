@@ -1,5 +1,4 @@
 interface NoteType {
-  id: number;
   detail: string;
   description: string;
 }

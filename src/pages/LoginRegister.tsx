@@ -1,42 +1,25 @@
 import { TextField, Button, Checkbox, Grid, Typography, Container } from '@mui/material';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { NoteType, UserType } from '../types';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { RegisterUserType } from '../types';
+import { useAppDispatch } from '../store/hooks';
 import { useLocation } from 'react-router-dom';
 import { Link, Snackbars } from '../components';
 import { setMessage } from '../store/modules/SnackBarsSlice';
-import { apiPost } from '../api';
+import { createUser, login } from '../api';
 
 const LoginRegister: React.FC = () => {
   const navigate = useNavigate();
   const pathName = useLocation().pathname;
   const dispatch = useAppDispatch();
   const [logged, setLogged] = useState<boolean>(false);
-  const [user, setUser] = useState<UserType>({
+  const [user, setUser] = useState<RegisterUserType>({
     name: '',
     email: '',
     password: '',
     repassword: '',
     notes: []
   });
-
-  // const loggedUser = () => {
-  //   return localStorage.getItem('ReccadosLoggedUser') || sessionStorage.getItem('ReccadosLoggedUser') || '';
-  // };
-
-  // useEffect(() => {
-  //   if (loggedUser() != '') {
-  //     return navigate('/notes');
-  //   }
-  //   if (usersData() != '{}') {
-  //     dispatch(addManyUser(usersData()));
-  //   }
-  // }, []);
-
-  // const usersData = () => {
-  //   return JSON.parse(localStorage.getItem('userData') || '{}');
-  // };
 
   const ValidatContact = () => {
     pathName != '/' ? handleRegisterContact() : handleLoginContact();
@@ -59,45 +42,46 @@ const LoginRegister: React.FC = () => {
       return dispatch(setMessage({ message: 'Utilize uma senha com no mínimo 6 caracteres!', status: 'error' }));
     }
 
-    try {
-      const newUser: UserType = {
-        name: user.name.toLowerCase(),
-        email: user.email,
-        password: user.password,
-        repassword: user.repassword,
-        notes: user.notes
-      };
-      await apiPost('/', newUser);
+    const newUser: RegisterUserType = {
+      name: user.name,
+      email: user.email.toLowerCase(),
+      password: user.password,
+      repassword: user.repassword,
+      notes: user.notes
+    };
+
+    const result = await createUser(newUser);
+
+    if (result.ok) {
       dispatch(setMessage({ message: 'Registrado com sucesso!', status: 'success' }));
-      return navigate('/');
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      dispatch(setMessage({ message: error.response.data.message, status: 'error' }));
+      navigate('/');
+      return;
     }
+    dispatch(setMessage({ message: result.message.toString(), status: 'error' }));
   };
 
-  const handleLoginContact = () => {
-    // const savedUsers = usersData();
-    // if (savedUsers[user.username.toLowerCase()] && savedUsers[user.username.toLowerCase()].password === user.password) {
-    //   sessionStorage.setItem('ReccadosLoggedUser', user.username.toLowerCase());
-    //   if (logged) {
-    //     localStorage.setItem('ReccadosLoggedUser', user.username.toLowerCase());
-    //   }
-    //   return navigate('/notes');
-    // } else {
-    //   return dispatch(setMessage({ message: 'Usuário ou senha incorretos!', status: 'error' }));
-    // }
+  const handleLoginContact = async () => {
+    const LoginUser = {
+      email: user.email.toLowerCase(),
+      password: user.password
+    };
+
+    const result = await login(LoginUser);
+
+    if (result.ok) {
+      dispatch(setMessage({ message: 'Logado com sucesso!', status: 'success' }));
+      sessionStorage.setItem('ReccadosLoggedUser', result.data.id);
+      if (logged) {
+        localStorage.setItem('ReccadosLoggedUser', result.data.id);
+      }
+      return navigate('/notes');
+    }
+    dispatch(setMessage({ message: result.message.toString(), status: 'error' }));
   };
 
   const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setLogged(event.target.checked);
   };
-
-  // useEffect(() => {
-  //   if (toSave) {
-  //     localStorage.setItem('userData', JSON.stringify(userData.entities));
-  //   }
-  // }, [userData]);
 
   return (
     <React.Fragment>
@@ -140,22 +124,24 @@ const LoginRegister: React.FC = () => {
               {pathName == '/' ? 'LOGIN' : 'REGISTRO'}
             </Typography>
           </Grid>
-          <Grid item xs={12} sx={{ mt: '50px' }}>
-            <TextField
-              label="Nome"
-              value={user.name}
-              onChange={ev =>
-                setUser({
-                  name: ev.target.value,
-                  email: user.email,
-                  password: user.password,
-                  repassword: user.password,
-                  notes: user.notes
-                })
-              }
-              variant="outlined"
-            />
-          </Grid>
+          {pathName === '/register' && (
+            <Grid item xs={12} sx={{ mt: '50px' }}>
+              <TextField
+                label="Nome"
+                value={user.name}
+                onChange={ev =>
+                  setUser({
+                    name: ev.target.value,
+                    email: user.email,
+                    password: user.password,
+                    repassword: user.password,
+                    notes: user.notes
+                  })
+                }
+                variant="outlined"
+              />
+            </Grid>
+          )}
           <Grid item xs={12}>
             <TextField
               label="Email"
