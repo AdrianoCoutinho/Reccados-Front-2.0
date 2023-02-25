@@ -1,5 +1,6 @@
 interface NoteEditType {
-  id?: number;
+  userid: string;
+  id: string;
   detail: string;
   description: string;
 }

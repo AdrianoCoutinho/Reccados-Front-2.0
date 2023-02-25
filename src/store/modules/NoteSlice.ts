@@ -1,56 +1,58 @@
-import { createAsyncThunk, createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '..';
-import { listNotes } from '../../api';
-import { NoteSliceType } from '../../types';
+import { createNote, deleteNote, editNote, listNotes } from '../../api';
+import { NoteEditType, NoteSliceType, NoteType } from '../../types';
+import NoteDeleteType from '../../types/NoteDeleteType';
 
-const adapter = createEntityAdapter<NoteSliceType>({
+const notesadapter = createEntityAdapter<NoteSliceType>({
   selectId: item => item.id
 });
 
-export const { selectAll: selectNotes, selectById } = adapter.getSelectors((state: RootState) => state.NoteSlice);
+export const { selectAll: selectNotes, selectById } = notesadapter.getSelectors((state: RootState) => state.NoteSlice);
 
-export const listAllNotes = createAsyncThunk('notes/getAll', async (userid: string) => {
+export const listAllNotes = createAsyncThunk('notes/listAll', async (userid: string) => {
   const result = await listNotes(userid);
-
-  if (result) {
+  if (result.ok) {
     return result.notes;
   }
 
   return [];
 });
 
-export const createNote = createAsyncThunk('notes/create', async (transaction: any) => {
-  const result = await createNote({ ...transaction });
+export const addNote = createAsyncThunk('notes/create', async (note: NoteType) => {
+  const result = await createNote(note);
+  if (result.ok) {
+    return result.data;
+  }
+  return { ok: false };
+});
 
-  console.log(result);
+export const updateNote = createAsyncThunk('notes/edit', async (note: NoteEditType) => {
+  const result = await editNote(note);
+  if (result.ok) {
+    console.log(result.data);
+    return result.data;
+  }
+  return { ok: false };
+});
 
-  // if (result.ok) {
-  //   return {
-  //     ok: true,
-  //     data: result.data.transactions
-  //   };
-  // }
-
-  // return {
-  //   ok: false
-  // };
+export const removeNote = createAsyncThunk('notes/delete', async (note: NoteDeleteType) => {
+  const result = await deleteNote(note);
+  if (result.ok) {
+    return result.note.id;
+  }
+  return { ok: false };
 });
 
 const NoteSlice = createSlice({
   name: 'NoteSlice',
-  initialState: adapter.getInitialState(),
+  initialState: notesadapter.getInitialState(),
   reducers: {},
   extraReducers: builder => {
-    builder
-      .addCase(listAllNotes.fulfilled, (state, action: PayloadAction<any>) => {
-        adapter.setAll(state, action.payload);
-      })
-      .addCase(createNote.fulfilled, (state, action: PayloadAction<any>) => {
-        adapter.addOne(state, action.payload);
-      })
-      .addCase(listAllNotes.rejected, (_, action) => {
-        console.log(action.payload);
-      });
+    builder.addCase(listAllNotes.fulfilled, notesadapter.setAll);
+    builder.addCase(addNote.fulfilled, notesadapter.addOne);
+    builder.addCase(updateNote.fulfilled, notesadapter.setOne);
+    builder.addCase(removeNote.fulfilled, notesadapter.removeOne);
   }
 });
 

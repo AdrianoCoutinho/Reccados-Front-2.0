@@ -3,10 +3,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AppBarHeader, DialogAction, Snackbars } from '../components';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { listAllNotes, selectNotes } from '../store/modules/NoteSlice';
+import { addNote, listAllNotes, removeNote, selectNotes, updateNote } from '../store/modules/NoteSlice';
 import { setMessage } from '../store/modules/SnackBarsSlice';
-import { NoteType } from '../types';
-import { createNote } from '../api';
+import { NoteEditType, NoteType } from '../types';
+import NoteDeleteActionType from '../types/NoteDeleteActionType';
+import NoteDeleteType from '../types/NoteDeleteType';
+import NoteEditActionType from '../types/NoteEditActionType';
 
 const Notes: React.FC = () => {
   const navigate = useNavigate();
@@ -23,7 +25,7 @@ const Notes: React.FC = () => {
 
   useEffect(() => {
     getListNotes();
-  }, []);
+  }, [dispatch]);
 
   const [note, setNote] = useState<NoteType>({
     detail: '',
@@ -40,12 +42,7 @@ const Notes: React.FC = () => {
     if (note.detail === '' || note.description === '') {
       return dispatch(setMessage({ message: 'Digite algo nos campos!', status: 'error' }));
     }
-    if (note.detail.length < 5) {
-      return dispatch(setMessage({ message: 'Digite ao menos 5 caracteres nos detalhes!', status: 'error' }));
-    }
-    if (note.description.length < 20) {
-      return dispatch(setMessage({ message: 'Digite ao menos 20 caracteres na descrição!', status: 'error' }));
-    }
+
     if (note.detail.length > 20) {
       return dispatch(
         setMessage({ message: 'Você ultrapassou o limite de 20 caracteres nos detalhes!', status: 'error' })
@@ -57,19 +54,19 @@ const Notes: React.FC = () => {
       );
     }
     const newNote: NoteType = {
+      userid: loggedUser(),
       detail: note.detail,
       description: note.description
     };
 
-    const result = await createNote(loggedUser(), newNote);
-
-    if (result.ok) {
-      getListNotes();
-      HandleClearNotes();
-      dispatch(setMessage({ message: 'Recado adicionado com sucesso!', status: 'success' }));
-      return;
-    }
-    dispatch(setMessage({ message: result.message.toString(), status: 'error' }));
+    dispatch(addNote(newNote));
+    HandleClearNotes();
+    // if (result.ok) {
+    //   HandleClearNotes();
+    //   dispatch(setMessage({ message: 'Recado adicionado com sucesso!', status: 'success' }));
+    //   return;
+    // }
+    // dispatch(setMessage({ message: result.message.toString(), status: 'error' }));
   };
 
   const HandleClearNotes = () => {
@@ -79,12 +76,25 @@ const Notes: React.FC = () => {
     });
   };
 
-  const handleEditConfirm = () => {
-    dispatch(setMessage({ message: 'Recado editado com sucesso!', status: 'success' }));
+  const handleEditConfirm = (noteToEdit: NoteEditActionType) => {
+    const dispatchEdit: NoteEditType = {
+      userid: loggedUser(),
+      id: noteToEdit.id,
+      detail: noteToEdit.detail,
+      description: noteToEdit.description
+    };
+    dispatch(updateNote(dispatchEdit));
+
+    //dispatch(setMessage({ message: 'Recado editado com sucesso!', status: 'success' }));
   };
 
-  const handleDeleteConfirm = () => {
-    dispatch(setMessage({ message: 'Recado deletado com sucesso!', status: 'success' }));
+  const handleDeleteConfirm = (noteToDelete: NoteDeleteActionType) => {
+    const dispatchDelete: NoteDeleteType = {
+      id: noteToDelete.id,
+      userid: loggedUser()
+    };
+    dispatch(removeNote(dispatchDelete));
+    //dispatch(setMessage({ message: 'Recado deletado com sucesso!', status: 'success' }));
   };
 
   return (

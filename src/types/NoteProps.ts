@@ -1,10 +1,10 @@
 /* eslint-disable no-unused-vars */
-import NoteType from './NoteType';
-
+import NoteActionsType from './NoteActionsType';
+import NoteDeleteActionType from './NoteDeleteActionType';
 interface NoteProps {
-  Note: NoteType;
-  actionEdit: (Note: NoteType) => void;
-  actionDelete: (Note: NoteType) => void;
+  Note: NoteActionsType;
+  actionEdit: (Note: any) => void;
+  actionDelete: (Note: NoteDeleteActionType) => void;
 }
 
 export default NoteProps;

@@ -9,22 +9,23 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 
-import { NoteType } from '../types';
 import NoteProps from '../types/NoteProps';
 import { setMessage } from '../store/modules/SnackBarsSlice';
 import { useAppDispatch } from '../store/hooks';
+import NoteActionsType from '../types/NoteActionsType';
 
 const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) => {
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
   const [dialogDelete, setdialogDelete] = React.useState(false);
-  const [selectedNote, setselectedNote] = React.useState<NoteType>({
+  const [selectedNote, setselectedNote] = React.useState<NoteActionsType>({
+    id: Note.id,
     detail: Note.detail,
     description: Note.description
   });
 
   const handleClickOpenEdit = () => {
-    setselectedNote({ detail: Note.detail, description: selectedNote.description });
+    setselectedNote({ id: Note.id, detail: Note.detail, description: selectedNote.description });
     setdialogDelete(false);
     setOpen(true);
   };
@@ -47,12 +48,6 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
     if (selectedNote.detail === '' || selectedNote.description === '') {
       return dispatch(setMessage({ message: 'Digite algo nos campos!', status: 'error' }));
     }
-    if (selectedNote.detail.length < 5) {
-      return dispatch(setMessage({ message: 'Digite ao menos 5 caracteres nos detalhes!', status: 'error' }));
-    }
-    if (selectedNote.description.length < 20) {
-      return dispatch(setMessage({ message: 'Digite ao menos 20 caracteres na descrição!', status: 'error' }));
-    }
     if (selectedNote.detail.length > 20) {
       return dispatch(
         setMessage({ message: 'Você ultrapassou o limite de 20 caracteres nos detalhes!', status: 'error' })
@@ -63,7 +58,6 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
         setMessage({ message: 'Você ultrapassou o limite de 494 caracteres na descrição!', status: 'error' })
       );
     }
-
     actionEdit(selectedNote);
     setOpen(false);
   };
@@ -96,7 +90,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
                 margin="dense"
                 value={selectedNote.detail}
                 onChange={ev => {
-                  setselectedNote({ detail: ev.target.value, description: selectedNote.description });
+                  setselectedNote({ id: Note.id, detail: ev.target.value, description: selectedNote.description });
                 }}
                 label="Detalhes"
                 type="text"
@@ -110,7 +104,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
                 inputProps={{ maxLength: 494 }}
                 value={selectedNote.description}
                 onChange={ev => {
-                  setselectedNote({ detail: selectedNote.detail, description: ev.target.value });
+                  setselectedNote({ id: Note.id, detail: selectedNote.detail, description: ev.target.value });
                 }}
                 label="Descrição"
                 type="text"
@@ -136,7 +130,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
                 margin="dense"
                 value={selectedNote.detail}
                 onChange={ev => {
-                  setselectedNote({ detail: ev.target.value, description: selectedNote.description });
+                  setselectedNote({ id: Note.id, detail: ev.target.value, description: selectedNote.description });
                 }}
                 label="Detalhes"
                 type="text"
@@ -148,7 +142,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
                 margin="dense"
                 value={selectedNote.description}
                 onChange={ev => {
-                  setselectedNote({ detail: selectedNote.detail, description: ev.target.value });
+                  setselectedNote({ id: Note.id, detail: selectedNote.detail, description: ev.target.value });
                 }}
                 label="Detalhes"
                 type="text"

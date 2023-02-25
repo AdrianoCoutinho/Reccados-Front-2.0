@@ -1,7 +1,7 @@
 interface NoteSliceType {
-  id: string;
-  detail: string;
   description: string;
+  detail: string;
+  id: string;
 }
 
 export default NoteSliceType;
