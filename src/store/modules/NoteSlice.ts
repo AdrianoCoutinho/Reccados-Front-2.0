@@ -3,6 +3,7 @@ import { RootState } from '..';
 import { createNote, deleteNote, editNote, listNotes } from '../../api';
 import { NoteEditType, NoteSliceType, NoteType } from '../../types';
 import NoteDeleteType from '../../types/NoteDeleteType';
+import { setMessage } from './SnackBarsSlice';
 
 const notesadapter = createEntityAdapter<NoteSliceType>({
   selectId: item => item.id
@@ -19,28 +20,33 @@ export const listAllNotes = createAsyncThunk('notes/listAll', async (userid: str
   return [];
 });
 
-export const addNote = createAsyncThunk('notes/create', async (note: NoteType) => {
+export const addNote = createAsyncThunk('notes/create', async (note: NoteType, { dispatch }) => {
   const result = await createNote(note);
   if (result.ok) {
+    dispatch(setMessage({ message: 'Recado adicionado com sucesso!', status: 'success' }));
     return result.data;
   }
+  dispatch(setMessage({ message: 'Recado não foi adicionado', status: 'error' }));
   return { ok: false };
 });
 
-export const updateNote = createAsyncThunk('notes/edit', async (note: NoteEditType) => {
+export const updateNote = createAsyncThunk('notes/edit', async (note: NoteEditType, { dispatch }) => {
   const result = await editNote(note);
   if (result.ok) {
-    console.log(result.data);
+    dispatch(setMessage({ message: 'Recado editado com sucesso!', status: 'success' }));
     return result.data;
   }
+  dispatch(setMessage({ message: 'Recado não foi editado!', status: 'error' }));
   return { ok: false };
 });
 
-export const removeNote = createAsyncThunk('notes/delete', async (note: NoteDeleteType) => {
+export const removeNote = createAsyncThunk('notes/delete', async (note: NoteDeleteType, { dispatch }) => {
   const result = await deleteNote(note);
   if (result.ok) {
+    dispatch(setMessage({ message: 'Recado deletado com sucesso!', status: 'success' }));
     return result.note.id;
   }
+  dispatch(setMessage({ message: 'Recado não foi deletado!', status: 'error' }));
   return { ok: false };
 });
 

@@ -1,5 +1,5 @@
 import { TextField, Button, Checkbox, Grid, Typography, Container } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { RegisterUserType } from '../types';
 import { useAppDispatch } from '../store/hooks';
@@ -20,6 +20,16 @@ const LoginRegister: React.FC = () => {
     repassword: '',
     notes: []
   });
+
+  const loggedUser = () => {
+    return localStorage.getItem('ReccadosLoggedUser') || sessionStorage.getItem('ReccadosLoggedUser') || undefined;
+  };
+
+  useEffect(() => {
+    if (loggedUser()) {
+      return navigate('/notes');
+    }
+  }, []);
 
   const ValidatContact = () => {
     pathName != '/' ? handleRegisterContact() : handleLoginContact();
@@ -71,8 +81,10 @@ const LoginRegister: React.FC = () => {
     if (result.ok) {
       dispatch(setMessage({ message: 'Logado com sucesso!', status: 'success' }));
       sessionStorage.setItem('ReccadosLoggedUser', result.data.id);
+      sessionStorage.setItem('ReccadosLoggedName', result.data.name);
       if (logged) {
         localStorage.setItem('ReccadosLoggedUser', result.data.id);
+        sessionStorage.setItem('ReccadosLoggedName', result.data.name);
       }
       return navigate('/notes');
     }

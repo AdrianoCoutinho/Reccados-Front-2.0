@@ -19,11 +19,18 @@ const Notes: React.FC = () => {
     return localStorage.getItem('ReccadosLoggedUser') || sessionStorage.getItem('ReccadosLoggedUser') || '';
   };
 
-  const getListNotes = async () => {
+  const loggedUserName = () => {
+    return localStorage.getItem('ReccadosLoggedName') || sessionStorage.getItem('ReccadosLoggedName') || '';
+  };
+
+  const getListNotes = () => {
     dispatch(listAllNotes(loggedUser()));
   };
 
   useEffect(() => {
+    if (loggedUser() === '') {
+      return navigate('/');
+    }
     getListNotes();
   }, [dispatch]);
 
@@ -60,13 +67,6 @@ const Notes: React.FC = () => {
     };
 
     dispatch(addNote(newNote));
-    HandleClearNotes();
-    // if (result.ok) {
-    //   HandleClearNotes();
-    //   dispatch(setMessage({ message: 'Recado adicionado com sucesso!', status: 'success' }));
-    //   return;
-    // }
-    // dispatch(setMessage({ message: result.message.toString(), status: 'error' }));
   };
 
   const HandleClearNotes = () => {
@@ -84,8 +84,6 @@ const Notes: React.FC = () => {
       description: noteToEdit.description
     };
     dispatch(updateNote(dispatchEdit));
-
-    //dispatch(setMessage({ message: 'Recado editado com sucesso!', status: 'success' }));
   };
 
   const handleDeleteConfirm = (noteToDelete: NoteDeleteActionType) => {
@@ -94,12 +92,16 @@ const Notes: React.FC = () => {
       userid: loggedUser()
     };
     dispatch(removeNote(dispatchDelete));
-    //dispatch(setMessage({ message: 'Recado deletado com sucesso!', status: 'success' }));
   };
 
   return (
     <React.Fragment>
-      <AppBarHeader titleHeader={'Reccados'} actionLogout={HandleLogout} logedUser={loggedUser()} noteLength={22} />
+      <AppBarHeader
+        titleHeader={'Reccados'}
+        actionLogout={HandleLogout}
+        logedUser={loggedUserName()}
+        noteLength={noteData.length}
+      />
       <Container maxWidth={false} sx={{ backgroundColor: '#ebeeef', height: 'auto', paddingBottom: '10px' }}>
         <Grid container rowSpacing={1} columnSpacing={2}>
           <Snackbars />
