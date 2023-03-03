@@ -43,6 +43,23 @@ export const createUser = async (user: RegisterUserType): Promise<ApiResponse> =
   }
 };
 
+export const listUser = async (user: string): Promise<any> => {
+  try {
+    const result = await axios.get(`/${user}`);
+    return result.data;
+  } catch (error: any) {
+    if (error.request?.response) {
+      const result = error.request.response;
+      return JSON.parse(result);
+    }
+
+    return {
+      ok: false,
+      message: error.toString()
+    };
+  }
+};
+
 export const login = async (user: LoginUserType): Promise<ApiResponse> => {
   try {
     const result = await axios.post('/login', user);

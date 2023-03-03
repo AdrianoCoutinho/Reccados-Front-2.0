@@ -1,9 +1,10 @@
 import { Button, Card, CardActions, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { listUser } from '../api';
 import { AppBarHeader, DialogAction, Snackbars } from '../components';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { addNote, listAllNotes, removeNote, selectNotes, updateNote } from '../store/modules/NoteSlice';
+import { addNote, listAllNotes, removeNote, removeOneNote, selectNotes, updateNote } from '../store/modules/NoteSlice';
 import { setMessage } from '../store/modules/SnackBarsSlice';
 import { NoteEditType, NoteType } from '../types';
 import NoteDeleteActionType from '../types/NoteDeleteActionType';
@@ -15,6 +16,16 @@ const Notes: React.FC = () => {
   const dispatch = useAppDispatch();
   const noteData = useAppSelector(selectNotes);
 
+  const veirfyUser = async () => {
+    const user = localStorage.getItem('ReccadosLoggedUser') || sessionStorage.getItem('ReccadosLoggedUser') || '';
+    const result = await listUser(user);
+    if (!result.ok) {
+      localStorage.removeItem('ReccadosLoggedUser');
+      sessionStorage.removeItem('ReccadosLoggedUser');
+      return navigate('/');
+    }
+  };
+
   const loggedUser = () => {
     return localStorage.getItem('ReccadosLoggedUser') || sessionStorage.getItem('ReccadosLoggedUser') || '';
   };
@@ -23,15 +34,12 @@ const Notes: React.FC = () => {
     return localStorage.getItem('ReccadosLoggedName') || sessionStorage.getItem('ReccadosLoggedName') || '';
   };
 
-  const getListNotes = () => {
-    dispatch(listAllNotes(loggedUser()));
-  };
-
   useEffect(() => {
     if (loggedUser() === '') {
       return navigate('/');
     }
-    getListNotes();
+    veirfyUser();
+    dispatch(listAllNotes(loggedUser()));
   }, [dispatch]);
 
   const [note, setNote] = useState<NoteType>({
@@ -76,14 +84,35 @@ const Notes: React.FC = () => {
     });
   };
 
-  const handleEditConfirm = (noteToEdit: NoteEditActionType) => {
+  const handleEditConfirm = async (noteToEdit: NoteEditActionType) => {
     const dispatchEdit: NoteEditType = {
       userid: loggedUser(),
       id: noteToEdit.id,
       detail: noteToEdit.detail,
       description: noteToEdit.description
     };
-    dispatch(updateNote(dispatchEdit));
+    const result = await dispatch(updateNote(dispatchEdit)).unwrap();
+    if (result.ok) {
+      return dispatch(setMessage({ message: 'Recado editado com sucesso!', status: 'success' }));
+    }
+    dispatch(setMessage({ message: 'Recado não foi editado.', status: 'error' }));
+  };
+
+  const handleToFileConfirm = async (noteToEdit: NoteEditActionType) => {
+    const dispatchEdit: NoteEditType = {
+      userid: loggedUser(),
+      id: noteToEdit.id,
+      detail: noteToEdit.detail,
+      description: noteToEdit.description,
+      arquived: noteToEdit.arquived
+    };
+    const result = await dispatch(updateNote(dispatchEdit)).unwrap();
+    if (!result.ok) {
+      dispatch(setMessage({ message: 'Recado não foi arquivado!', status: 'error' }));
+      return;
+    }
+    dispatch(removeOneNote(noteToEdit.id));
+    dispatch(setMessage({ message: 'Recado arquivado com sucesso!', status: 'success' }));
   };
 
   const handleDeleteConfirm = (noteToDelete: NoteDeleteActionType) => {
@@ -173,7 +202,12 @@ const Notes: React.FC = () => {
                     </Typography>
                   </CardContent>
                   <CardActions sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                    <DialogAction actionEdit={handleEditConfirm} actionDelete={handleDeleteConfirm} Note={item} />
+                    <DialogAction
+                      actionEdit={handleEditConfirm}
+                      actionToFile={handleToFileConfirm}
+                      actionDelete={handleDeleteConfirm}
+                      Note={item}
+                    />
                   </CardActions>
                 </Card>
               </Grid>

@@ -1,4 +1,4 @@
-import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { RootState } from '..';
 import { createNote, deleteNote, editNote, listNotes } from '../../api';
 import { NoteEditType, NoteSliceType, NoteType } from '../../types';
@@ -16,7 +16,6 @@ export const listAllNotes = createAsyncThunk('notes/listAll', async (userid: str
   if (result.ok) {
     return result.notes;
   }
-
   return [];
 });
 
@@ -30,14 +29,21 @@ export const addNote = createAsyncThunk('notes/create', async (note: NoteType, {
   return { ok: false };
 });
 
-export const updateNote = createAsyncThunk('notes/edit', async (note: NoteEditType, { dispatch }) => {
+export const updateNote = createAsyncThunk('notes/edit', async (note: NoteEditType) => {
   const result = await editNote(note);
+  let changes = {};
   if (result.ok) {
-    dispatch(setMessage({ message: 'Recado editado com sucesso!', status: 'success' }));
-    return result.data;
+    changes = {
+      detail: note.detail,
+      description: note.description,
+      arquived: note.arquived
+    };
   }
-  dispatch(setMessage({ message: 'Recado não foi editado!', status: 'error' }));
-  return { ok: false };
+  return {
+    id: note.id,
+    changes,
+    ok: result.ok
+  };
 });
 
 export const removeNote = createAsyncThunk('notes/delete', async (note: NoteDeleteType, { dispatch }) => {
@@ -53,13 +59,16 @@ export const removeNote = createAsyncThunk('notes/delete', async (note: NoteDele
 const NoteSlice = createSlice({
   name: 'NoteSlice',
   initialState: notesadapter.getInitialState(),
-  reducers: {},
+  reducers: {
+    removeOneNote: notesadapter.removeOne
+  },
   extraReducers: builder => {
     builder.addCase(listAllNotes.fulfilled, notesadapter.setAll);
     builder.addCase(addNote.fulfilled, notesadapter.addOne);
-    builder.addCase(updateNote.fulfilled, notesadapter.setOne);
+    builder.addCase(updateNote.fulfilled, notesadapter.updateOne);
     builder.addCase(removeNote.fulfilled, notesadapter.removeOne);
   }
 });
 
+export const { removeOneNote } = NoteSlice.actions;
 export default NoteSlice.reducer;

@@ -8,16 +8,19 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import IconButton from '@mui/material/IconButton';
 
 import NoteProps from '../types/NoteProps';
 import { setMessage } from '../store/modules/SnackBarsSlice';
 import { useAppDispatch } from '../store/hooks';
 import NoteActionsType from '../types/NoteActionsType';
+import { Inventory } from '@mui/icons-material';
 
-const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) => {
+const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, actionDelete }) => {
   const dispatch = useAppDispatch();
   const [open, setOpen] = React.useState(false);
   const [dialogDelete, setdialogDelete] = React.useState(false);
+  const [dialogToFile, setdialogToFile] = React.useState(false);
   const [selectedNote, setselectedNote] = React.useState<NoteActionsType>({
     id: Note.id,
     detail: Note.detail,
@@ -30,12 +33,31 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
     setOpen(true);
   };
 
+  const handleClickOpenToFile = () => {
+    setselectedNote({ id: Note.id, detail: Note.detail, description: selectedNote.description });
+    setdialogDelete(false);
+    setdialogToFile(true);
+    setOpen(true);
+  };
+
   const handleClickOpenDelete = () => {
+    setdialogToFile(false);
     setdialogDelete(true);
     setOpen(true);
   };
 
   const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleToFile = () => {
+    const NoteToFile = {
+      id: Note.id,
+      detail: Note.detail,
+      description: Note.description,
+      arquived: true
+    };
+    actionToFile(NoteToFile);
     setOpen(false);
   };
 
@@ -64,21 +86,36 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
 
   return (
     <div>
-      <Button variant="outlined" color="primary" startIcon={<EditIcon />} onClick={handleClickOpenEdit}>
-        Editar
-      </Button>
-      <Button
-        variant="outlined"
-        color="error"
-        endIcon={<DeleteIcon />}
-        onClick={handleClickOpenDelete}
-        sx={{ ml: '5px' }}
+      <IconButton
+        title="editar recado"
+        color="info"
+        aria-label="upload picture"
+        component="label"
+        onClick={handleClickOpenEdit}
       >
-        Excluir
-      </Button>
+        <EditIcon />
+      </IconButton>
+      <IconButton
+        title="arquivar recado"
+        color="secondary"
+        aria-label="upload picture"
+        component="label"
+        onClick={handleClickOpenToFile}
+      >
+        <Inventory />
+      </IconButton>
+      <IconButton
+        title="deletar recado"
+        color="error"
+        aria-label="upload picture"
+        component="label"
+        onClick={handleClickOpenDelete}
+      >
+        <DeleteIcon />
+      </IconButton>
       <Dialog open={open} onClose={handleClose}>
         <DialogTitle>ID: {22}</DialogTitle>
-        {!dialogDelete && (
+        {!dialogDelete && !dialogToFile && (
           <>
             <DialogContent>
               <DialogContentText>{`Você esta editando o recado "${Note.detail}"`}</DialogContentText>
@@ -115,7 +152,45 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
               <Button color="success" onClick={handleEdit}>
-                Confirmar
+                Editar
+              </Button>
+            </DialogActions>
+          </>
+        )}
+
+        {dialogToFile && (
+          <>
+            <DialogContent>
+              <DialogContentText>{`Tem certeza que arquivar o recado "${Note.detail}"?`}</DialogContentText>
+              <TextField
+                disabled
+                margin="dense"
+                value={selectedNote.detail}
+                onChange={ev => {
+                  setselectedNote({ id: Note.id, detail: ev.target.value, description: selectedNote.description });
+                }}
+                label="Detalhes"
+                type="text"
+                fullWidth
+                variant="standard"
+              />
+              <TextField
+                disabled
+                margin="dense"
+                value={selectedNote.description}
+                onChange={ev => {
+                  setselectedNote({ id: Note.id, detail: selectedNote.detail, description: ev.target.value });
+                }}
+                label="Detalhes"
+                type="text"
+                fullWidth
+                variant="standard"
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose}>Cancelar</Button>
+              <Button color="success" onClick={handleToFile}>
+                Arquivar
               </Button>
             </DialogActions>
           </>
@@ -152,7 +227,9 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionDelete }) =
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
-              <Button onClick={handleDelete}>Deletar</Button>
+              <Button color="error" onClick={handleDelete}>
+                Excluir
+              </Button>
             </DialogActions>
           </>
         )}

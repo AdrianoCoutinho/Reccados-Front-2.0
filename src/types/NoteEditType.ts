@@ -3,6 +3,7 @@ interface NoteEditType {
   id: string;
   detail: string;
   description: string;
+  arquived?: boolean;
 }
 
 export default NoteEditType;
