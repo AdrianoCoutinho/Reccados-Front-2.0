@@ -85,6 +85,10 @@ const Notes: React.FC = () => {
     });
   };
 
+  const arquivedLength = () => {
+    return noteData.filter(item => item.arquived === true).length;
+  };
+
   const handleEditConfirm = async (noteToEdit: NoteEditActionType) => {
     const dispatchEdit: NoteEditType = {
       userid: loggedUser(),
@@ -130,7 +134,7 @@ const Notes: React.FC = () => {
         titleHeader={'Reccados'}
         actionLogout={HandleLogout}
         logedUser={loggedUserName()}
-        noteArquivedLength={noteData.length}
+        noteArquivedLength={arquivedLength()}
         noteLength={noteData.length}
       />
       <Container maxWidth={false} sx={{ backgroundColor: '#ebeeef', height: 'auto', paddingBottom: '10px' }}>
@@ -173,9 +177,14 @@ const Notes: React.FC = () => {
               SALVAR
             </Button>
           </Grid>
-          <Grid item xs={6} sx={{ mb: '20px' }}>
+          <Grid item xs={6}>
             <Button fullWidth variant="contained" onClick={HandleClearNotes}>
               LIMPAR
+            </Button>
+          </Grid>
+          <Grid item xs={12} sx={{ mb: '2px' }}>
+            <Button fullWidth variant="contained" color="secondary" onClick={() => navigate('/arquived')}>
+              ARQUIVADOS
             </Button>
           </Grid>
           {noteData

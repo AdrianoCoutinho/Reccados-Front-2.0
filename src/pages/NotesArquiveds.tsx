@@ -115,8 +115,7 @@ const NotesArquiveds: React.FC = () => {
   };
 
   const arquivedLength = () => {
-    const arquiveds = noteData.filter(item => item.arquived === true);
-    return arquiveds.length;
+    return noteData.filter(item => item.arquived === true).length;
   };
 
   return (
@@ -125,14 +124,14 @@ const NotesArquiveds: React.FC = () => {
         titleHeader={'Reccados'}
         actionLogout={HandleLogout}
         logedUser={loggedUserName()}
-        noteArquivedLength={arquivedLength}
+        noteArquivedLength={arquivedLength()}
         noteLength={noteData.length}
       />
       <Container maxWidth={false} sx={{ backgroundColor: '#ebeeef', height: 'auto', paddingBottom: '10px' }}>
         <Grid container rowSpacing={1} columnSpacing={2}>
           <Snackbars />
           <Grid item xs={12}>
-            <Typography variant="h3" color={'ActiveCaption'} sx={{ textAlign: 'center' }}>
+            <Typography variant="h4" color={'GrayText'} sx={{ textAlign: 'center' }}>
               RECADOS ARQUIVADOS
             </Typography>
           </Grid>
@@ -198,7 +197,7 @@ const NotesArquiveds: React.FC = () => {
         {!toDelete && (
           <>
             <DialogContent>
-              <DialogContentText>{'Tem certeza que deseja desarquivar o recado TAL?'}</DialogContentText>
+              <DialogContentText>{'Tem certeza que deseja desarquivar este recado?'}</DialogContentText>
               <TextField
                 disabled
                 margin="dense"
@@ -220,7 +219,7 @@ const NotesArquiveds: React.FC = () => {
             </DialogContent>
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
-              <Button color="error" onClick={handleToFileConfirm}>
+              <Button color="success" onClick={handleToFileConfirm}>
                 Desarquivar
               </Button>
             </DialogActions>
@@ -229,7 +228,7 @@ const NotesArquiveds: React.FC = () => {
         {toDelete && (
           <>
             <DialogContent>
-              <DialogContentText>{'Tem certeza que deseja excluir o recado TAL?'}</DialogContentText>
+              <DialogContentText>{'Tem certeza que deseja excluir este recado?'}</DialogContentText>
               <TextField
                 disabled
                 margin="dense"
