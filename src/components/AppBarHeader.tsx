@@ -10,8 +10,17 @@ import { AccountCircle } from '@mui/icons-material';
 import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
 import { AppBarHeaderProps } from '../types';
+import { Inventory } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
-const AppBarHeader: React.FC<AppBarHeaderProps> = ({ titleHeader, actionLogout, logedUser, noteLength }) => {
+const AppBarHeader: React.FC<AppBarHeaderProps> = ({
+  titleHeader,
+  actionLogout,
+  logedUser,
+  noteLength,
+  noteArquivedLength
+}) => {
+  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const handleClose = () => {
     setAnchorEl(null);
@@ -28,9 +37,25 @@ const AppBarHeader: React.FC<AppBarHeaderProps> = ({ titleHeader, actionLogout, 
           </Typography>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}></Typography>
           <Typography variant="body1">
-            <Badge badgeContent={noteLength} color="error">
+            <Badge
+              onClick={() => navigate('/arquived')}
+              badgeContent={noteArquivedLength}
+              sx={{ marginRight: '22px', cursor: 'pointer' }}
+              color="secondary"
+              title="recados arquivados"
+            >
+              <Inventory color="action" />
+            </Badge>
+            <Badge
+              sx={{ cursor: 'pointer' }}
+              onClick={() => navigate('/notes')}
+              badgeContent={noteLength}
+              color="error"
+              title="total de recados"
+            >
               <MailIcon color="action" />
             </Badge>
+
             <IconButton
               sx={{ marginLeft: '15px' }}
               size="large"

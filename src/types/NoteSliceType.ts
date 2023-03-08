@@ -3,6 +3,7 @@ interface NoteSliceType {
   detail: string;
   id: string;
   ok?: boolean;
+  arquived: boolean;
 }
 
 export default NoteSliceType;

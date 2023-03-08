@@ -1,6 +1,6 @@
 import React from 'react';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { LoginRegister, Notes } from '../pages';
+import { LoginRegister, Notes, NotesArquiveds } from '../pages';
 const router = createBrowserRouter([
   {
     path: '/',
@@ -13,6 +13,10 @@ const router = createBrowserRouter([
   {
     path: '/register',
     element: <LoginRegister />
+  },
+  {
+    path: 'arquived',
+    element: <NotesArquiveds />
   }
 ]);
 

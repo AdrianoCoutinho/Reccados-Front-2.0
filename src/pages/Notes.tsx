@@ -75,6 +75,7 @@ const Notes: React.FC = () => {
     };
 
     dispatch(addNote(newNote));
+    HandleClearNotes();
   };
 
   const HandleClearNotes = () => {
@@ -129,6 +130,7 @@ const Notes: React.FC = () => {
         titleHeader={'Reccados'}
         actionLogout={HandleLogout}
         logedUser={loggedUserName()}
+        noteArquivedLength={noteData.length}
         noteLength={noteData.length}
       />
       <Container maxWidth={false} sx={{ backgroundColor: '#ebeeef', height: 'auto', paddingBottom: '10px' }}>
@@ -177,6 +179,7 @@ const Notes: React.FC = () => {
             </Button>
           </Grid>
           {noteData
+            .filter(note => note.arquived === false)
             .slice(0)
             .reverse()
             .map(item => (

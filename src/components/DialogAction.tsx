@@ -114,7 +114,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
         <DeleteIcon />
       </IconButton>
       <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>ID: {22}</DialogTitle>
+        <DialogTitle>ID: {selectedNote.id}</DialogTitle>
         {!dialogDelete && !dialogToFile && (
           <>
             <DialogContent>
