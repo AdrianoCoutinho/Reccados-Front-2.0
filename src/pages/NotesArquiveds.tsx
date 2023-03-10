@@ -21,7 +21,7 @@ import { useNavigate } from 'react-router-dom';
 import { listUser } from '../api';
 import { AppBarHeader, Snackbars } from '../components';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
-import { listAllNotes, removeNote, removeOneNote, selectNotes, updateNote } from '../store/modules/NoteSlice';
+import { listAllNotes, removeNote, selectNotes, updateNote } from '../store/modules/NoteSlice';
 import { setMessage } from '../store/modules/SnackBarsSlice';
 import { NoteEditType } from '../types';
 import NoteDeleteType from '../types/NoteDeleteType';
@@ -30,6 +30,7 @@ import NoteActionsType from '../types/NoteActionsType';
 const NotesArquiveds: React.FC = () => {
   const [open, setOpen] = React.useState(false);
   const [toDelete, setToDelete] = React.useState<boolean>(false);
+  const [arquivedCount, setArquivedCount] = React.useState<number>(1);
   const [selectedNote, setselectedNote] = React.useState<NoteActionsType>({
     id: '',
     detail: '',
@@ -63,6 +64,7 @@ const NotesArquiveds: React.FC = () => {
     }
     veirfyUser();
     dispatch(listAllNotes(loggedUser()));
+    arquivedLength();
   }, [dispatch]);
 
   const HandleLogout = () => {
@@ -97,7 +99,6 @@ const NotesArquiveds: React.FC = () => {
       dispatch(setMessage({ message: 'Recado não foi desarquivado!', status: 'error' }));
       return;
     }
-    //dispatch(removeOneNote(selectedNote.id));
     dispatch(setMessage({ message: 'Recado desarquivado com sucesso!', status: 'success' }));
   };
 
@@ -115,7 +116,7 @@ const NotesArquiveds: React.FC = () => {
   };
 
   const arquivedLength = () => {
-    return noteData.filter(item => item.arquived === true).length;
+    setArquivedCount(noteData.filter(item => item.arquived === true).length);
   };
 
   return (
@@ -124,7 +125,7 @@ const NotesArquiveds: React.FC = () => {
         titleHeader={'Reccados'}
         actionLogout={HandleLogout}
         logedUser={loggedUserName()}
-        noteArquivedLength={arquivedLength()}
+        noteArquivedLength={arquivedCount}
         noteLength={noteData.length}
       />
       <Container maxWidth={false} sx={{ backgroundColor: '#ebeeef', height: 'auto', paddingBottom: '10px' }}>

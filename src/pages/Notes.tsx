@@ -1,4 +1,16 @@
-import { Button, Card, CardActions, CardContent, Container, Grid, TextField, Typography } from '@mui/material';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  Checkbox,
+  Container,
+  FormControlLabel,
+  FormGroup,
+  Grid,
+  TextField,
+  Typography
+} from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listUser } from '../api';
@@ -39,7 +51,12 @@ const Notes: React.FC = () => {
       return navigate('/');
     }
     veirfyUser();
-    dispatch(listAllNotes(loggedUser()));
+    const listParams: any = {
+      userid: loggedUser(),
+      detail: undefined,
+      arquived: false
+    };
+    dispatch(listAllNotes(listParams));
   }, [dispatch]);
 
   const [note, setNote] = useState<NoteType>({
@@ -85,10 +102,6 @@ const Notes: React.FC = () => {
     });
   };
 
-  const arquivedLength = () => {
-    return noteData.filter(item => item.arquived === true).length;
-  };
-
   const handleEditConfirm = async (noteToEdit: NoteEditActionType) => {
     const dispatchEdit: NoteEditType = {
       userid: loggedUser(),
@@ -116,7 +129,6 @@ const Notes: React.FC = () => {
       dispatch(setMessage({ message: 'Recado não foi arquivado!', status: 'error' }));
       return;
     }
-    dispatch(removeOneNote(noteToEdit.id));
     dispatch(setMessage({ message: 'Recado arquivado com sucesso!', status: 'success' }));
   };
 
@@ -128,13 +140,22 @@ const Notes: React.FC = () => {
     dispatch(removeNote(dispatchDelete));
   };
 
+  const listArquiveds = () => {
+    const listParams: any = {
+      userid: loggedUser(),
+      detail: undefined,
+      arquived: true
+    };
+    dispatch(listAllNotes(listParams));
+  };
+
   return (
     <React.Fragment>
       <AppBarHeader
         titleHeader={'Reccados'}
         actionLogout={HandleLogout}
         logedUser={loggedUserName()}
-        noteArquivedLength={arquivedLength()}
+        noteArquivedLength={11}
         noteLength={noteData.length}
       />
       <Container maxWidth={false} sx={{ backgroundColor: '#ebeeef', height: 'auto', paddingBottom: '10px' }}>
@@ -182,13 +203,18 @@ const Notes: React.FC = () => {
               LIMPAR
             </Button>
           </Grid>
-          <Grid item xs={12} sx={{ mb: '2px' }}>
-            <Button fullWidth variant="contained" color="secondary" onClick={() => navigate('/arquived')}>
-              ARQUIVADOS
-            </Button>
+          <Grid item xs={12} sx={{ mb: '2px', textAlign: 'left' }}>
+            <FormGroup>
+              <FormControlLabel
+                control={<Checkbox color="secondary" />}
+                label="Arquivados"
+                color="secondary"
+                title="exibir recados arquivados"
+              />
+            </FormGroup>
           </Grid>
           {noteData
-            .filter(note => note.arquived === false)
+
             .slice(0)
             .reverse()
             .map(item => (

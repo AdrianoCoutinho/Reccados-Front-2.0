@@ -84,6 +84,20 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
     setOpen(false);
   };
 
+  const isArquived = () => {
+    if (Note.arquived === false) {
+      return 'arquivar recado';
+    }
+    return 'desarquivar recado';
+  };
+
+  const isArquivedColor = () => {
+    if (Note.arquived === false) {
+      return 'secondary';
+    }
+    return 'warning';
+  };
+
   return (
     <div>
       <IconButton
@@ -96,8 +110,8 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
         <EditIcon />
       </IconButton>
       <IconButton
-        title="arquivar recado"
-        color="secondary"
+        title={isArquived()}
+        color={isArquivedColor()}
         aria-label="upload picture"
         component="label"
         onClick={handleClickOpenToFile}

@@ -11,8 +11,9 @@ const notesadapter = createEntityAdapter<NoteSliceType>({
 
 export const { selectAll: selectNotes, selectById } = notesadapter.getSelectors((state: RootState) => state.NoteSlice);
 
-export const listAllNotes = createAsyncThunk('notes/listAll', async (userid: string) => {
-  const result = await listNotes(userid);
+export const listAllNotes = createAsyncThunk('notes/listAll', async (params: any) => {
+  const result = await listNotes(params);
+  console.log(result);
   if (result.ok) {
     return result.notes;
   }

@@ -77,9 +77,19 @@ export const login = async (user: LoginUserType): Promise<ApiResponse> => {
   }
 };
 
-export const listNotes = async (userid: string): Promise<ApiResponseListNotes> => {
+export const listNotes = async (params: any): Promise<ApiResponseListNotes> => {
   try {
-    const result = await axios.get(`/${userid}/notes`);
+    let result = await axios.get(`/${params.userid}/notes`);
+    if (params.detail && params.arquived != undefined) {
+      result = await axios.get(`/${params.userid}/notes?detail=${params.detail}&arquived=${params.arquived}`);
+      return result.data;
+    }
+    if (params.detail) {
+      result = await axios.get(`/${params.userid}/notes?detail=${params.detail}`);
+    }
+    if (params.arquived != undefined) {
+      result = await axios.get(`/${params.userid}/notes?arquived=${params.arquived}`);
+    }
     return result.data;
   } catch (error: any) {
     if (error.request?.response) {
