@@ -1,4 +1,4 @@
-import { createAsyncThunk, createEntityAdapter, createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '..';
 import { createNote, deleteNote, editNote, listNotes } from '../../api';
 import { NoteEditType, NoteSliceType, NoteType } from '../../types';
@@ -13,7 +13,6 @@ export const { selectAll: selectNotes, selectById } = notesadapter.getSelectors(
 
 export const listAllNotes = createAsyncThunk('notes/listAll', async (params: any) => {
   const result = await listNotes(params);
-  console.log(result);
   if (result.ok) {
     return result.notes;
   }

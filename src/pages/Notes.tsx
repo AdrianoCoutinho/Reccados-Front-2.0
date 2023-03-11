@@ -1,4 +1,6 @@
+import SearchIcon from '@mui/icons-material/Search';
 import {
+  Box,
   Button,
   Card,
   CardActions,
@@ -6,11 +8,11 @@ import {
   Checkbox,
   Container,
   FormControlLabel,
-  FormGroup,
   Grid,
   TextField,
   Typography
 } from '@mui/material';
+
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { listUser } from '../api';
@@ -27,6 +29,11 @@ const Notes: React.FC = () => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const noteData = useAppSelector(selectNotes);
+  const [search, setSearch] = useState({ detail: '', arquived: false });
+  const [note, setNote] = useState<NoteType>({
+    detail: '',
+    description: ''
+  });
 
   const veirfyUser = async () => {
     const user = localStorage.getItem('ReccadosLoggedUser') || sessionStorage.getItem('ReccadosLoggedUser') || '';
@@ -53,16 +60,15 @@ const Notes: React.FC = () => {
     veirfyUser();
     const listParams: any = {
       userid: loggedUser(),
-      detail: undefined,
+      detail: '',
       arquived: false
     };
     dispatch(listAllNotes(listParams));
   }, [dispatch]);
 
-  const [note, setNote] = useState<NoteType>({
-    detail: '',
-    description: ''
-  });
+  useEffect(() => {
+    listFilters();
+  }, [search]);
 
   const HandleLogout = () => {
     localStorage.removeItem('ReccadosLoggedUser');
@@ -129,6 +135,9 @@ const Notes: React.FC = () => {
       dispatch(setMessage({ message: 'Recado não foi arquivado!', status: 'error' }));
       return;
     }
+    if (!search.arquived) {
+      dispatch(removeOneNote(noteToEdit.id));
+    }
     dispatch(setMessage({ message: 'Recado arquivado com sucesso!', status: 'success' }));
   };
 
@@ -140,12 +149,18 @@ const Notes: React.FC = () => {
     dispatch(removeNote(dispatchDelete));
   };
 
-  const listArquiveds = () => {
+  const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch({ detail: search.detail, arquived: event.target.checked });
+  };
+
+  const listFilters = () => {
     const listParams: any = {
       userid: loggedUser(),
-      detail: undefined,
-      arquived: true
+      detail: search.detail,
+      arquived: search.arquived
     };
+    console.log(listParams);
+
     dispatch(listAllNotes(listParams));
   };
 
@@ -203,16 +218,31 @@ const Notes: React.FC = () => {
               LIMPAR
             </Button>
           </Grid>
-          <Grid item xs={12} sx={{ mb: '2px', textAlign: 'left' }}>
-            <FormGroup>
+          <Grid item xs={12} sx={{ textAling: 'center' }}>
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'flex-end',
+                maxWidth: '100%'
+              }}
+            >
+              <SearchIcon sx={{ color: 'action.active', mr: 1, my: 0.5 }} />
+              <TextField
+                variant="standard"
+                fullWidth
+                label="Buscar.."
+                onChange={ev => setSearch({ detail: ev.target.value, arquived: search.arquived })}
+                id="fullWidth"
+              />
               <FormControlLabel
-                control={<Checkbox color="secondary" />}
+                control={<Checkbox checked={search.arquived} onChange={handleChangeCheckBox} color="secondary" />}
                 label="Arquivados"
                 color="secondary"
                 title="exibir recados arquivados"
               />
-            </FormGroup>
+            </Box>
           </Grid>
+
           {noteData
 
             .slice(0)
