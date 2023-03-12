@@ -21,6 +21,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
   const [open, setOpen] = React.useState(false);
   const [dialogDelete, setdialogDelete] = React.useState(false);
   const [dialogToFile, setdialogToFile] = React.useState(false);
+  const [dialogToFileStatus, setdialogToFileStatus] = React.useState({ Context: 'arquivar' });
   const [selectedNote, setselectedNote] = React.useState<NoteActionsType>({
     id: Note.id,
     detail: Note.detail,
@@ -34,6 +35,10 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
   };
 
   const handleClickOpenToFile = () => {
+    if (selectedNote.arquived) {
+      return setdialogToFileStatus({ Context: 'desarquivar' });
+    }
+    setdialogToFileStatus({ Context: 'arquivar' });
     setselectedNote({ id: Note.id, detail: Note.detail, description: selectedNote.description });
     setdialogDelete(false);
     setdialogToFile(true);
@@ -175,7 +180,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
         {dialogToFile && (
           <>
             <DialogContent>
-              <DialogContentText>{`Tem certeza que arquivar o recado "${Note.detail}"?`}</DialogContentText>
+              <DialogContentText>{`Tem certeza que deseja ${isArquived()} "${Note.detail}"?`}</DialogContentText>
               <TextField
                 disabled
                 margin="dense"
@@ -204,7 +209,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
             <DialogActions>
               <Button onClick={handleClose}>Cancelar</Button>
               <Button color="success" onClick={handleToFile}>
-                Arquivar
+                {isArquived()}
               </Button>
             </DialogActions>
           </>

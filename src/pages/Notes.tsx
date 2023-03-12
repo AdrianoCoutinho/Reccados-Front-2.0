@@ -15,7 +15,7 @@ import {
 
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { listUser } from '../api';
+import { listNotes, listUser } from '../api';
 import { AppBarHeader, DialogAction, Snackbars } from '../components';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { addNote, listAllNotes, removeNote, removeOneNote, selectNotes, updateNote } from '../store/modules/NoteSlice';
@@ -30,6 +30,8 @@ const Notes: React.FC = () => {
   const dispatch = useAppDispatch();
   const noteData = useAppSelector(selectNotes);
   const [search, setSearch] = useState({ detail: '', arquived: false });
+  const [notesTotalCount, setNotesTotalCount] = useState(0);
+  const [notesArquivedCount, setNotesArquivedCount] = useState(0);
   const [note, setNote] = useState<NoteType>({
     detail: '',
     description: ''
@@ -53,6 +55,30 @@ const Notes: React.FC = () => {
     return localStorage.getItem('ReccadosLoggedName') || sessionStorage.getItem('ReccadosLoggedName') || '';
   };
 
+  const notesLengthTotal = async () => {
+    const listParams: any = {
+      userid: loggedUser(),
+      detail: '',
+      arquived: true
+    };
+    const result = await listNotes(listParams);
+    if (result.ok) {
+      return setNotesTotalCount(result.notes.length);
+    }
+  };
+
+  const notesLengthArquived = async () => {
+    const listParams: any = {
+      userid: loggedUser(),
+      detail: '',
+      arquived: false
+    };
+    const result = await listNotes(listParams);
+    if (result.ok) {
+      return setNotesArquivedCount(notesTotalCount - result.notes.length);
+    }
+  };
+
   useEffect(() => {
     if (loggedUser() === '') {
       return navigate('/');
@@ -65,6 +91,11 @@ const Notes: React.FC = () => {
     };
     dispatch(listAllNotes(listParams));
   }, [dispatch]);
+
+  useEffect(() => {
+    notesLengthArquived();
+    notesLengthTotal();
+  }, [noteData, notesTotalCount]);
 
   useEffect(() => {
     listFilters();
@@ -122,13 +153,39 @@ const Notes: React.FC = () => {
     dispatch(setMessage({ message: 'Recado não foi editado.', status: 'error' }));
   };
 
+  const veriFyFile = (file: any) => {
+    if (!file.arquived) {
+      return handleToFileConfirm(file);
+    }
+    return handleToUnFileConfirm(file);
+  };
+
   const handleToFileConfirm = async (noteToEdit: NoteEditActionType) => {
     const dispatchEdit: NoteEditType = {
       userid: loggedUser(),
       id: noteToEdit.id,
       detail: noteToEdit.detail,
       description: noteToEdit.description,
-      arquived: noteToEdit.arquived
+      arquived: true
+    };
+    const result = await dispatch(updateNote(dispatchEdit)).unwrap();
+    if (!result.ok) {
+      dispatch(setMessage({ message: 'Recado não foi arquivado!', status: 'error' }));
+      return;
+    }
+    if (!search.arquived) {
+      dispatch(removeOneNote(noteToEdit.id));
+    }
+    dispatch(setMessage({ message: 'Recado arquivado com sucesso!', status: 'success' }));
+  };
+
+  const handleToUnFileConfirm = async (noteToEdit: NoteEditActionType) => {
+    const dispatchEdit: NoteEditType = {
+      userid: loggedUser(),
+      id: noteToEdit.id,
+      detail: noteToEdit.detail,
+      description: noteToEdit.description,
+      arquived: false
     };
     const result = await dispatch(updateNote(dispatchEdit)).unwrap();
     if (!result.ok) {
@@ -159,8 +216,6 @@ const Notes: React.FC = () => {
       detail: search.detail,
       arquived: search.arquived
     };
-    console.log(listParams);
-
     dispatch(listAllNotes(listParams));
   };
 
@@ -170,8 +225,8 @@ const Notes: React.FC = () => {
         titleHeader={'Reccados'}
         actionLogout={HandleLogout}
         logedUser={loggedUserName()}
-        noteArquivedLength={11}
-        noteLength={noteData.length}
+        noteArquivedLength={notesArquivedCount}
+        noteLength={notesTotalCount}
       />
       <Container maxWidth={false} sx={{ backgroundColor: '#ebeeef', height: 'auto', paddingBottom: '10px' }}>
         <Grid container rowSpacing={1} columnSpacing={2}>
@@ -272,7 +327,7 @@ const Notes: React.FC = () => {
                   <CardActions sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
                     <DialogAction
                       actionEdit={handleEditConfirm}
-                      actionToFile={handleToFileConfirm}
+                      actionToFile={() => veriFyFile(item)}
                       actionDelete={handleDeleteConfirm}
                       Note={item}
                     />

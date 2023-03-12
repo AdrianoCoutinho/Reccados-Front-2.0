@@ -38,21 +38,14 @@ const AppBarHeader: React.FC<AppBarHeaderProps> = ({
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}></Typography>
           <Typography variant="body1">
             <Badge
-              onClick={() => navigate('/arquived')}
-              badgeContent={noteArquivedLength}
               sx={{ marginRight: '22px', cursor: 'pointer' }}
-              color="secondary"
-              title="recados arquivados"
+              badgeContent={noteArquivedLength}
+              color="warning"
+              title="total de recados arquivados"
             >
-              <Inventory color="action" />
+              <MailIcon color="action" />
             </Badge>
-            <Badge
-              sx={{ cursor: 'pointer' }}
-              onClick={() => navigate('/notes')}
-              badgeContent={noteLength}
-              color="error"
-              title="total de recados"
-            >
+            <Badge sx={{ cursor: 'pointer' }} badgeContent={noteLength} color="secondary" title="total de recados">
               <MailIcon color="action" />
             </Badge>
 
