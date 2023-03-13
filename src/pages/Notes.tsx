@@ -37,6 +37,26 @@ const Notes: React.FC = () => {
     description: ''
   });
 
+  useEffect(() => {
+    if (loggedUser() === '') {
+      return navigate('/');
+    }
+    veirfyUser();
+    // const listParams = {
+    //   userid: loggedUser()
+    // };
+    // dispatch(listAllNotes(listParams));
+  }, [dispatch]);
+
+  useEffect(() => {
+    notesLengthArquived();
+    notesLengthTotal();
+  }, [noteData]);
+
+  useEffect(() => {
+    listFilters();
+  }, [search]);
+
   const veirfyUser = async () => {
     const user = localStorage.getItem('ReccadosLoggedUser') || sessionStorage.getItem('ReccadosLoggedUser') || '';
     const result = await listUser(user);
@@ -58,8 +78,10 @@ const Notes: React.FC = () => {
   const notesLengthTotal = async () => {
     const listParams: any = {
       userid: loggedUser(),
-      detail: '',
-      arquived: true
+      note: {
+        detail: '',
+        arquived: true
+      }
     };
     const result = await listNotes(listParams);
     if (result.ok) {
@@ -68,38 +90,26 @@ const Notes: React.FC = () => {
   };
 
   const notesLengthArquived = async () => {
-    const listParams: any = {
-      userid: loggedUser(),
-      detail: '',
-      arquived: false
+    const listParams = {
+      userid: loggedUser()
     };
     const result = await listNotes(listParams);
     if (result.ok) {
-      return setNotesArquivedCount(notesTotalCount - result.notes.length);
+      console.log(result);
+      return setNotesArquivedCount(result.notes.length);
     }
   };
 
-  useEffect(() => {
-    if (loggedUser() === '') {
-      return navigate('/');
-    }
-    veirfyUser();
-    const listParams: any = {
+  const listFilters = () => {
+    const listParams = {
       userid: loggedUser(),
-      detail: '',
-      arquived: false
+      note: {
+        detail: search.detail,
+        arquived: search.arquived
+      }
     };
     dispatch(listAllNotes(listParams));
-  }, [dispatch]);
-
-  useEffect(() => {
-    notesLengthArquived();
-    notesLengthTotal();
-  }, [noteData, notesTotalCount]);
-
-  useEffect(() => {
-    listFilters();
-  }, [search]);
+  };
 
   const HandleLogout = () => {
     localStorage.removeItem('ReccadosLoggedUser');
@@ -208,15 +218,6 @@ const Notes: React.FC = () => {
 
   const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch({ detail: search.detail, arquived: event.target.checked });
-  };
-
-  const listFilters = () => {
-    const listParams: any = {
-      userid: loggedUser(),
-      detail: search.detail,
-      arquived: search.arquived
-    };
-    dispatch(listAllNotes(listParams));
   };
 
   return (
