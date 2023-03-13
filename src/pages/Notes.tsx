@@ -96,7 +96,6 @@ const Notes: React.FC = () => {
     };
     const result = await listNotes(listParams);
     if (result.ok) {
-      console.log(result);
       return setNotesArquivedCount(result.notes.length);
     }
   };

@@ -82,7 +82,6 @@ export const listNotes = async (params: any): Promise<ApiResponseListNotes> => {
     if (params.note) {
       result = await axios.get(`/${params.userid}/notes?detail=${params.note.detail}&arquived=${params.note.arquived}`);
     }
-    console.log(result.data);
     return result.data;
   } catch (error: any) {
     if (error.request?.response) {
