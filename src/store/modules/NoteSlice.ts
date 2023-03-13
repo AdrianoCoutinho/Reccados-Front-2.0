@@ -1,8 +1,7 @@
 import { createAsyncThunk, createEntityAdapter, createSlice } from '@reduxjs/toolkit';
 import { RootState } from '..';
 import { createNote, deleteNote, editNote, listNotes } from '../../api';
-import { NoteEditType, NoteSliceType, NoteType } from '../../types';
-import NoteDeleteType from '../../types/NoteDeleteType';
+import { ListParamsType, NoteDeleteType, NoteEditType, NoteSliceType, NoteType } from '../../types';
 import { setMessage } from './SnackBarsSlice';
 
 const notesadapter = createEntityAdapter<NoteSliceType>({
@@ -11,7 +10,7 @@ const notesadapter = createEntityAdapter<NoteSliceType>({
 
 export const { selectAll: selectNotes, selectById } = notesadapter.getSelectors((state: RootState) => state.NoteSlice);
 
-export const listAllNotes = createAsyncThunk('notes/listAll', async (params: any) => {
+export const listAllNotes = createAsyncThunk('notes/listAll', async (params: ListParamsType) => {
   const result = await listNotes(params);
   if (result.ok) {
     return result.notes;

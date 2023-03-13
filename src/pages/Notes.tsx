@@ -20,10 +20,15 @@ import { AppBarHeader, DialogAction, Snackbars } from '../components';
 import { useAppDispatch, useAppSelector } from '../store/hooks';
 import { addNote, listAllNotes, removeNote, removeOneNote, selectNotes, updateNote } from '../store/modules/NoteSlice';
 import { setMessage } from '../store/modules/SnackBarsSlice';
-import { NoteEditType, NoteType } from '../types';
-import NoteDeleteActionType from '../types/NoteDeleteActionType';
-import NoteDeleteType from '../types/NoteDeleteType';
-import NoteEditActionType from '../types/NoteEditActionType';
+import {
+  ListParamsType,
+  NoteDeleteActionType,
+  NoteDeleteType,
+  NoteEditActionType,
+  NoteEditType,
+  NoteSliceType,
+  NoteType
+} from '../types';
 
 const Notes: React.FC = () => {
   const navigate = useNavigate();
@@ -42,10 +47,6 @@ const Notes: React.FC = () => {
       return navigate('/');
     }
     veirfyUser();
-    // const listParams = {
-    //   userid: loggedUser()
-    // };
-    // dispatch(listAllNotes(listParams));
   }, [dispatch]);
 
   useEffect(() => {
@@ -76,7 +77,7 @@ const Notes: React.FC = () => {
   };
 
   const notesLengthTotal = async () => {
-    const listParams: any = {
+    const listParams = {
       userid: loggedUser(),
       note: {
         detail: '',
@@ -101,7 +102,7 @@ const Notes: React.FC = () => {
   };
 
   const listFilters = () => {
-    const listParams = {
+    const listParams: ListParamsType = {
       userid: loggedUser(),
       note: {
         detail: search.detail,
@@ -163,7 +164,7 @@ const Notes: React.FC = () => {
     dispatch(setMessage({ message: 'Recado não foi editado.', status: 'error' }));
   };
 
-  const veriFyFile = (file: any) => {
+  const veriFyFile = (file: NoteSliceType) => {
     if (!file.arquived) {
       return handleToFileConfirm(file);
     }

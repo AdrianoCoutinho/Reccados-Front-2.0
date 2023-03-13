@@ -1,4 +1,4 @@
-interface NoteType {
+interface SelectedNoteType {
   id: string;
   userid?: string;
   detail: string;
@@ -6,4 +6,4 @@ interface NoteType {
   arquived?: boolean;
 }
 
-export default NoteType;
+export default SelectedNoteType;

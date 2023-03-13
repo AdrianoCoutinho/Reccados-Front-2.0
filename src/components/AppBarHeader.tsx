@@ -10,8 +10,6 @@ import { AccountCircle } from '@mui/icons-material';
 import Badge from '@mui/material/Badge';
 import MailIcon from '@mui/icons-material/Mail';
 import { AppBarHeaderProps } from '../types';
-import { Inventory } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
 
 const AppBarHeader: React.FC<AppBarHeaderProps> = ({
   titleHeader,
@@ -20,7 +18,6 @@ const AppBarHeader: React.FC<AppBarHeaderProps> = ({
   noteLength,
   noteArquivedLength
 }) => {
-  const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const handleClose = () => {
     setAnchorEl(null);

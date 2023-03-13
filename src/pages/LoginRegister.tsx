@@ -1,7 +1,7 @@
 import { TextField, Button, Checkbox, Grid, Typography, Container } from '@mui/material';
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { RegisterUserType } from '../types';
+import { LoginUserType, RegisterUserType } from '../types';
 import { useAppDispatch } from '../store/hooks';
 import { useLocation } from 'react-router-dom';
 import { Link, Snackbars } from '../components';
@@ -31,7 +31,7 @@ const LoginRegister: React.FC = () => {
     }
   }, []);
 
-  const submitForm = async (event: any) => {
+  const submitForm = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     ValidatContact();
   };
@@ -76,7 +76,7 @@ const LoginRegister: React.FC = () => {
   };
 
   const handleLoginContact = async () => {
-    const LoginUser = {
+    const LoginUser: LoginUserType = {
       email: user.email.toLowerCase(),
       password: user.password
     };

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import axios from 'axios';
-import { LoginUserType, NoteEditType, NoteType, RegisterUserType } from '../types';
-import NoteDeleteType from '../types/NoteDeleteType';
+import { LoginUserType, NoteDeleteType, NoteEditType, NoteType, RegisterUserType } from '../types';
 
 axios.defaults.baseURL = process.env.REACT_APP_API_URL;
 
