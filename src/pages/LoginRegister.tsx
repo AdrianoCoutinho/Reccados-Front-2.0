@@ -31,6 +31,11 @@ const LoginRegister: React.FC = () => {
     }
   }, []);
 
+  const submitForm = async (event: any) => {
+    event.preventDefault();
+    ValidatContact();
+  };
+
   const ValidatContact = () => {
     pathName != '/' ? handleRegisterContact() : handleLoginContact();
   };
@@ -129,22 +134,41 @@ const LoginRegister: React.FC = () => {
               borderTopLeftRadius: '10px',
               borderTopRightRadius: '10px',
               backgroundImage: 'url(/images/img-header-login.jpeg)',
-              backgroundSize: 'cover'
+              backgroundSize: 'cover',
+              mb: '50px'
             }}
           >
             <Typography variant="h3" gutterBottom sx={{ padding: '30px', color: 'white' }}>
               {pathName == '/' ? 'LOGIN' : 'REGISTRO'}
             </Typography>
           </Grid>
-          {pathName === '/register' && (
-            <Grid item xs={12} sx={{ mt: '50px' }}>
+          <form onSubmit={submitForm}>
+            {pathName === '/register' && (
+              <Grid item xs={12}>
+                <TextField
+                  label="Nome"
+                  value={user.name}
+                  onChange={ev =>
+                    setUser({
+                      name: ev.target.value,
+                      email: user.email,
+                      password: user.password,
+                      repassword: user.password,
+                      notes: user.notes
+                    })
+                  }
+                  variant="outlined"
+                />
+              </Grid>
+            )}
+            <Grid item xs={12} sx={{ mt: '10px' }}>
               <TextField
-                label="Nome"
-                value={user.name}
+                label="Email"
+                value={user.email}
                 onChange={ev =>
                   setUser({
-                    name: ev.target.value,
-                    email: user.email,
+                    name: user.name,
+                    email: ev.target.value,
                     password: user.password,
                     repassword: user.password,
                     notes: user.notes
@@ -153,83 +177,67 @@ const LoginRegister: React.FC = () => {
                 variant="outlined"
               />
             </Grid>
-          )}
-          <Grid item xs={12}>
-            <TextField
-              label="Email"
-              value={user.email}
-              onChange={ev =>
-                setUser({
-                  name: user.name,
-                  email: ev.target.value,
-                  password: user.password,
-                  repassword: user.password,
-                  notes: user.notes
-                })
-              }
-              variant="outlined"
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <TextField
-              label="Senha"
-              value={user.password}
-              onChange={ev =>
-                setUser({
-                  name: user.name,
-                  email: user.email,
-                  password: ev.target.value,
-                  repassword: user.repassword,
-                  notes: user.notes
-                })
-              }
-              variant="outlined"
-              type="password"
-            />
-          </Grid>
-          {pathName === '/register' && (
-            <Grid item xs={12}>
+            <Grid item xs={12} sx={{ mt: '10px' }}>
               <TextField
-                label="Repita a senha"
-                type="password"
-                value={user.repassword}
+                label="Senha"
+                value={user.password}
                 onChange={ev =>
                   setUser({
                     name: user.name,
                     email: user.email,
-                    password: user.password,
-                    notes: user.notes,
-                    repassword: ev.target.value
+                    password: ev.target.value,
+                    repassword: user.repassword,
+                    notes: user.notes
                   })
                 }
                 variant="outlined"
+                type="password"
               />
             </Grid>
-          )}
-
-          {pathName === '/' && (
-            <Grid item xs={12} sx={{ mt: '-20px', mb: '-10px' }}>
-              <Checkbox checked={logged} onChange={handleChangeCheckBox} />
-              Manter login?
-            </Grid>
-          )}
-
-          <Grid item xs={12}>
-            <Button variant="contained" onClick={ValidatContact}>
-              {pathName == '/' ? 'Entrar' : 'Registrar'}
-            </Button>
-          </Grid>
-          <Grid item xs={12}>
-            {pathName == '/' ? (
-              <>
-                Não tem conta? <Link to="/register" name="Registrar-se" />
-              </>
-            ) : (
-              <>
-                Já tem uma conta? <Link to="/" name="Fazer login" />
-              </>
+            {pathName === '/register' && (
+              <Grid item xs={12} sx={{ mt: '10px' }}>
+                <TextField
+                  label="Repita a senha"
+                  type="password"
+                  value={user.repassword}
+                  onChange={ev =>
+                    setUser({
+                      name: user.name,
+                      email: user.email,
+                      password: user.password,
+                      notes: user.notes,
+                      repassword: ev.target.value
+                    })
+                  }
+                  variant="outlined"
+                />
+              </Grid>
             )}
-          </Grid>
+
+            {pathName === '/' && (
+              <Grid item xs={12} sx={{ mb: '-10px' }}>
+                <Checkbox checked={logged} onChange={handleChangeCheckBox} />
+                Manter login?
+              </Grid>
+            )}
+
+            <Grid item xs={12} sx={{ mt: '10px' }}>
+              <Button variant="contained" type="submit">
+                {pathName == '/' ? 'Entrar' : 'Registrar'}
+              </Button>
+            </Grid>
+            <Grid item xs={12} sx={{ mt: '10px' }}>
+              {pathName == '/' ? (
+                <>
+                  Não tem conta? <Link to="/register" name="Registrar-se" />
+                </>
+              ) : (
+                <>
+                  Já tem uma conta? <Link to="/" name="Fazer login" />
+                </>
+              )}
+            </Grid>
+          </form>
         </Grid>
       </Container>
     </React.Fragment>
