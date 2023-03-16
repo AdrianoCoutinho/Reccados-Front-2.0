@@ -150,12 +150,15 @@ const Notes: React.FC = () => {
   };
 
   const handleEditConfirm = async (noteToEdit: NoteEditActionType) => {
+    console.log(noteToEdit);
     const dispatchEdit: NoteEditType = {
       userid: loggedUser(),
       id: noteToEdit.id,
       detail: noteToEdit.detail,
-      description: noteToEdit.description
+      description: noteToEdit.description,
+      arquived: noteToEdit.arquived
     };
+    console.log(dispatchEdit);
     const result = await dispatch(updateNote(dispatchEdit)).unwrap();
     if (result.ok) {
       return dispatch(setMessage({ message: 'Recado editado com sucesso!', status: 'success' }));

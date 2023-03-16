@@ -23,17 +23,29 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
   const [selectedNote, setselectedNote] = React.useState<SelectedNoteType>({
     id: Note.id,
     detail: Note.detail,
-    description: Note.description
+    description: Note.description,
+    arquived: Note.arquived
   });
 
   const handleClickOpenEdit = () => {
-    setselectedNote({ id: Note.id, detail: Note.detail, description: selectedNote.description });
+    setselectedNote({
+      id: Note.id,
+      detail: Note.detail,
+      description: selectedNote.description,
+      arquived: Note.arquived
+    });
     setdialogDelete(false);
+    setdialogToFile(false);
     setOpen(true);
   };
 
   const handleClickOpenToFile = () => {
-    setselectedNote({ id: Note.id, detail: Note.detail, description: selectedNote.description });
+    setselectedNote({
+      id: Note.id,
+      detail: Note.detail,
+      description: selectedNote.description,
+      arquived: Note.arquived
+    });
     setdialogDelete(false);
     setdialogToFile(true);
     setOpen(true);
@@ -79,6 +91,7 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
         setMessage({ message: 'Você ultrapassou o limite de 494 caracteres na descrição!', status: 'error' })
       );
     }
+    console.log(selectedNote);
     actionEdit(selectedNote);
     setOpen(false);
   };
@@ -140,7 +153,12 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
                 margin="dense"
                 value={selectedNote.detail}
                 onChange={ev => {
-                  setselectedNote({ id: Note.id, detail: ev.target.value, description: selectedNote.description });
+                  setselectedNote({
+                    id: Note.id,
+                    detail: ev.target.value,
+                    description: selectedNote.description,
+                    arquived: Note.arquived
+                  });
                 }}
                 label="Detalhes"
                 type="text"
@@ -154,7 +172,12 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
                 inputProps={{ maxLength: 494 }}
                 value={selectedNote.description}
                 onChange={ev => {
-                  setselectedNote({ id: Note.id, detail: selectedNote.detail, description: ev.target.value });
+                  setselectedNote({
+                    id: Note.id,
+                    detail: selectedNote.detail,
+                    description: ev.target.value,
+                    arquived: Note.arquived
+                  });
                 }}
                 label="Descrição"
                 type="text"
@@ -180,7 +203,12 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
                 margin="dense"
                 value={selectedNote.detail}
                 onChange={ev => {
-                  setselectedNote({ id: Note.id, detail: ev.target.value, description: selectedNote.description });
+                  setselectedNote({
+                    id: Note.id,
+                    detail: ev.target.value,
+                    description: selectedNote.description,
+                    arquived: Note.arquived
+                  });
                 }}
                 label="Detalhes"
                 type="text"
@@ -192,7 +220,12 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
                 margin="dense"
                 value={selectedNote.description}
                 onChange={ev => {
-                  setselectedNote({ id: Note.id, detail: selectedNote.detail, description: ev.target.value });
+                  setselectedNote({
+                    id: Note.id,
+                    detail: selectedNote.detail,
+                    description: ev.target.value,
+                    arquived: Note.arquived
+                  });
                 }}
                 label="Detalhes"
                 type="text"
@@ -218,7 +251,12 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
                 margin="dense"
                 value={selectedNote.detail}
                 onChange={ev => {
-                  setselectedNote({ id: Note.id, detail: ev.target.value, description: selectedNote.description });
+                  setselectedNote({
+                    id: Note.id,
+                    detail: ev.target.value,
+                    description: selectedNote.description,
+                    arquived: Note.arquived
+                  });
                 }}
                 label="Detalhes"
                 type="text"
@@ -230,7 +268,12 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
                 margin="dense"
                 value={selectedNote.description}
                 onChange={ev => {
-                  setselectedNote({ id: Note.id, detail: selectedNote.detail, description: ev.target.value });
+                  setselectedNote({
+                    id: Note.id,
+                    detail: selectedNote.detail,
+                    description: ev.target.value,
+                    arquived: Note.arquived
+                  });
                 }}
                 label="Detalhes"
                 type="text"

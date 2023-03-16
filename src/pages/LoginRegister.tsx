@@ -165,6 +165,7 @@ const LoginRegister: React.FC = () => {
               <TextField
                 label="Email"
                 value={user.email}
+                type={'email'}
                 onChange={ev =>
                   setUser({
                     name: user.name,
