@@ -117,7 +117,7 @@ export const createNote = async (note: NoteType): Promise<ApiResponseListNotes> 
 
 export const editNote = async (note: NoteEditType): Promise<ApiResponseActionNote> => {
   try {
-    const result = await axios.put(`/${note.userid}/notes/${note.id}`, note);
+    const result = await axios.put(`/notes/${note.id}`, note);
     return result.data;
   } catch (error: any) {
     if (error.request?.response) {
@@ -135,7 +135,7 @@ export const editNote = async (note: NoteEditType): Promise<ApiResponseActionNot
 
 export const deleteNote = async (note: NoteDeleteType): Promise<ApiResponseActionNote> => {
   try {
-    const result = await axios.delete(`/${note.userid}/notes/${note.id}`);
+    const result = await axios.delete(`/notes/${note.id}`);
     return result.data;
   } catch (error: any) {
     if (error.request?.response) {
