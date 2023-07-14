@@ -27,7 +27,13 @@ export interface ApiResponseActionNote {
 
 export const createUser = async (user: RegisterUserType): Promise<ApiResponse> => {
   try {
-    const result = await axios.post('/', user);
+    const newUser = {
+      name: user.name,
+      email: user.email,
+      password: user.password,
+      repassword: user.repassword
+    };
+    const result = await axios.post('/', newUser);
     return result.data;
   } catch (error: any) {
     if (error.request?.response) {

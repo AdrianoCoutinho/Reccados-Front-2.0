@@ -48,10 +48,8 @@ const LoginRegister: React.FC = () => {
       return dispatch(setMessage({ message: 'As senhas não coincidem!', status: 'error' }));
     }
 
-    if (user.name.length < 5) {
-      return dispatch(
-        setMessage({ message: 'Utilize um nome de usuário com no mínimo 5 caracteres!', status: 'error' })
-      );
+    if (user.name.length < 3) {
+      return dispatch(setMessage({ message: 'O nome precisa ter no mínimo 3 caracteres!', status: 'error' }));
     }
     if (user.password.length < 6) {
       return dispatch(setMessage({ message: 'Utilize uma senha com no mínimo 6 caracteres!', status: 'error' }));

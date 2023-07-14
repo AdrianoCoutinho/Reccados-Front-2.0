@@ -91,7 +91,6 @@ const DialogAction: React.FC<NoteProps> = ({ Note, actionEdit, actionToFile, act
         setMessage({ message: 'Você ultrapassou o limite de 494 caracteres na descrição!', status: 'error' })
       );
     }
-    console.log(selectedNote);
     actionEdit(selectedNote);
     setOpen(false);
   };
