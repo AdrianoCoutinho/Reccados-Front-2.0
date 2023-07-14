@@ -12,12 +12,12 @@ Módulo BackEnd com REACT + API Express
 ```
 Se o sistema não estiver respondendo entre no deploy da API  para ativa-lá:
 ```
-**https://api-reccados.onrender.com/user**
+**[https://api-reccados.onrender.com/user](https://reccadosmi.onrender.com/user)**
 
 ```
 Repositório da API:
 ```
-**https://github.com/AdrianoCoutinho/api-recados**
+**[https://github.com/AdrianoCoutinho/Reccados-API-2.0](https://github.com/AdrianoCoutinho/Reccados-API-2.0)**
 <p align="center">
   <img src="https://i.imgur.com/R9w1hOI.png?1" alt="Recados" title="Recados" height=400/> 
   
