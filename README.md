@@ -8,7 +8,7 @@ Sistema construido totalmente do zero, não foi utilizada nenhuma imagem ou arqu
 Módulo BackEnd com REACT + API Express
 ```
 
-**[Você pode ver o sistema funcionando clicando aqui - https://reccados-react-com-api-f3rc.vercel.app/](https://reccados-react-com-api-f3rc.vercel.app/)**
+**[Você pode ver o sistema funcionando clicando aqui - [https://reccados-react-com-api-f3rc.vercel.app/](https://reccados-react-com-api-f3rc.vercel.app/)](https://reccados-front-2-0.vercel.app/)**
 ```
 Se o sistema não estiver respondendo entre no deploy da API  para ativa-lá:
 ```
