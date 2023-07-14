@@ -209,12 +209,15 @@ const Notes: React.FC = () => {
     dispatch(setMessage({ message: 'Recado arquivado com sucesso!', status: 'success' }));
   };
 
-  const handleDeleteConfirm = (noteToDelete: NoteDeleteActionType) => {
+  const handleDeleteConfirm = async (noteToDelete: NoteDeleteActionType) => {
     const dispatchDelete: NoteDeleteType = {
       id: noteToDelete.id,
       userid: loggedUser()
     };
-    dispatch(removeNote(dispatchDelete));
+    const toDelete = await dispatch(removeNote(dispatchDelete));
+    if (toDelete.meta.arg.id && toDelete.meta.arg.id === noteToDelete.id) {
+      dispatch(removeOneNote(noteToDelete.id));
+    }
   };
 
   const handleChangeCheckBox = (event: React.ChangeEvent<HTMLInputElement>) => {
