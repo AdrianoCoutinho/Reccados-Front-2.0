@@ -25,6 +25,23 @@ export interface ApiResponseActionNote {
   note: any;
 }
 
+export const wakeup = async (): Promise<any> => {
+  try {
+    const result = await axios.get('/');
+    return result;
+  } catch (error: any) {
+    if (error.request?.response) {
+      const result = error.request.response;
+      return JSON.parse(result);
+    }
+
+    return {
+      ok: false,
+      message: error.toString()
+    };
+  }
+};
+
 export const createUser = async (user: RegisterUserType): Promise<ApiResponse> => {
   try {
     const newUser = {

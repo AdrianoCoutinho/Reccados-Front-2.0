@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { LoginUserType, RegisterUserType } from '../types';
 import { useAppDispatch } from '../store/hooks';
 import { useLocation } from 'react-router-dom';
-import { Link, Snackbars } from '../components';
+import { Link, Snackbars, WakeUpBackdrop } from '../components';
 import { setMessage } from '../store/modules/SnackBarsSlice';
 import { createUser, login } from '../api';
 
@@ -100,6 +100,7 @@ const LoginRegister: React.FC = () => {
 
   return (
     <React.Fragment>
+      <WakeUpBackdrop />
       <Container
         maxWidth={false}
         sx={{
